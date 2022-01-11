@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/elbandingo/employeeTracker#readme",
   "dependencies": {
-    "inquirer": "^8.2.0"
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.3"
   }
 }
