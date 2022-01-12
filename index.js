@@ -28,7 +28,7 @@ function mainPrompt() {
         type: "list",
         name: "task",
         message: "Please make a selection",
-        choices: ["View Employees", "View Employees By Department", "Add Employee", "Remove Employee", "Update Employee", "Add Role", "End"]
+        choices: ["View Employees", "View Employees By Department", "View Roles", "Add Department", "Add Employee", "Remove Employee", "Update Employee", "Add Role", "End"]
     }]).then(({task}) => {
         console.log(task);
         console.log('======================');
@@ -36,14 +36,15 @@ function mainPrompt() {
         if(task === "View Employees"){
             viewEmp();
         } else if (task === "View Employees By Department") {
-            console.log("you chose view employees by department");
-            //viewByDept();
+            viewByDept();
+        } else if (task === "View Roles") {
+            viewRoles();
+        } else if (task === "Add Department") {
+            addDept();
         } else if (task === "Add Employee") {
-            console.log("you chose add employee")
-            //addEmp();
+            addEmp();
         } else if (task === "Remove Employee") {
-            console.log("you chose remove employee")
-            //remEmp();
+            remEmp();
         } else if (task === "Update Employee") {
             console.log("you chose update employee");
             //updateEmp();
@@ -73,6 +74,103 @@ function viewEmp() {
         //return to the main prompt again after showing table
         mainPrompt();
     })
+}
+
+//function to view by department, first they must make an inquirer to pick from the list
+function viewByDept() {
+    inquirer.prompt([{
+        type: "list",
+        name: "departmentChoice",
+        message: "What Department to you want to view?",
+        choices: ["Engineering", "Research and Development", "Accounts Payable"]
+    }]).then(({departmentChoice}) => {
+        const sql = `SELECT employees.first_name,employees.last_name, roles.title, departments.name AS department
+                    FROM employees
+                    JOIN roles ON employees.role_id = roles.id
+                    JOIN departments ON departments.id = roles.department_id
+                    WHERE departments.name = ?`;
+        //run the query, display the table, then take them back to the main prompt
+        db.query(sql, departmentChoice,(err,res) => {
+            if (err) throw err;
+            console.table(res);
+            mainPrompt();
+        })
+        
+    })
+}
+
+//function to view roles
+function viewRoles(){
+    const sql = `SELECT title, salary FROM roles`;
+    db.query(sql,(err,res) => {
+        if (err) throw err;
+        console.table(res);
+        mainPrompt();
+    })
+}
+
+//function to add a department
+function addDept() {
+    inquirer.prompt([{
+        type: "input",
+        name: "department_name",
+        message: "what is the name of the department"
+    },
+    {
+        type: "input",
+        name: "department_id",
+        message: "give your department a numerical value"
+    }
+    ]).then((answer) => {
+        const sql = `INSERT INTO departments SET ?`
+        db.query(sql, {
+            id: answer.department_id,
+            name: answer.department_name
+        },(err,res) => {
+            if(err) throw err;
+            console.table(res);
+            mainPrompt();
+        })
+    })
+}
+
+//function to add an employee
+function addEmp() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "first_name",
+            message: "What is the first name?"
+    },
+    {
+        type: "input",
+        name: "last_name",
+        message: "What is the last name?"
+    },
+    {
+        type: "input",
+        name: "role_id",
+        message: "What is their role? 1= Jr. Engineer, 2= Sr. Engineer, 3= Jr. Scientist, 4= Sr. Scientist, 5= Jr. Accountant, 6= Sr. Accountant",
+        choices: [1,2,3,4,5,6]
+    }
+]).then((answer) => {
+    console.log(`creating your employee entry for ${answer.first_name} ${answer.last_name} with role id ${answer.role_id}`);
+    const sql = `INSERT INTO employees SET ?`
+    db.query(sql, {
+        first_name: answer.first_name,
+        last_name: answer.last_name,
+        role_id: answer.role_id
+    },(err,res) => {
+        if (err) throw err;
+        console.table(res);
+        mainPrompt();
+    });
+});
+}
+
+//function to remove an employee based on ID
+function remEmp() {
+
 }
 
 
