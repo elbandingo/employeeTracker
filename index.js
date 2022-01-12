@@ -46,8 +46,7 @@ function mainPrompt() {
         } else if (task === "Remove Employee") {
             remEmp();
         } else if (task === "Update Employee") {
-            console.log("you chose update employee");
-            //updateEmp();
+            updateEmp();
         } else if (task === "Add Role") {
             console.log("you chose add role")
             //updateRole();
@@ -122,11 +121,18 @@ function addDept() {
         message: "give your department a numerical value"
     }
     ]).then((answer) => {
-        const sql = `INSERT INTO departments SET ?`
+        const sql = `INSERT INTO departments SET ?`;
+        const query = `SELECT * FROM departments`;
         db.query(sql, {
             id: answer.department_id,
             name: answer.department_name
         },(err,res) => {
+            if(err) throw err;
+            console.log("you have created a new department, please see the list below");
+            
+        })
+
+        db.query(query, (err,res) => {
             if(err) throw err;
             console.table(res);
             mainPrompt();
@@ -170,6 +176,56 @@ function addEmp() {
 
 //function to remove an employee based on ID
 function remEmp() {
+    const query = `SELECT * from employees`;
+    db.query(query, (err,res) => {
+        if (err) throw err;
+        console.table(res);
+        console.log("please enter an empoloyee ID number you want to remove below:")
+    })
+
+    inquirer.prompt([{
+        type: "input",
+        name: "roleID",
+        message: "Enter the ID number for the employee you want to remove"
+    }]).then((response) => {
+        const sql = `DELETE FROM employees WHERE id = ?`
+        db.query(sql, response.roleID, (err,res) => {
+            if (err) throw err;
+            console.table(res);
+            console.log("Employee Removed!");
+            mainPrompt();
+        })
+    })
+}
+//function to update an employee based on ID
+function updateEmp() {
+    const query = `SELECT * from employees`;
+    db.query(query, (err,res) => {
+        if (err) throw err;
+        console.table(res);
+        console.log("please enter an empoloyee ID number you want to update below, and answer the prompts:")
+    })
+
+    inquirer.prompt([{
+        type: "input",
+        name: "employeeID",
+        message: "Enter the ID for the employee to update"
+    },
+{
+    type: "input",
+    name: "role_id",
+    message: "What is their role? 1= Jr. Engineer, 2= Sr. Engineer, 3= Jr. Scientist, 4= Sr. Scientist, 5= Jr. Accountant, 6= Sr. Accountant",
+    choices: [1,2,3,4,5,6]
+}]).then((answer) => {
+    const sql = `UPDATE employees SET role_id = ${answer.role_id} WHERE id = ${answer.employeeID}`;
+    db.query(sql,(err,res) => {
+        if (err) throw err;
+        console.table(res);
+        mainPrompt();
+    })
+        
+
+    })
 
 }
 
