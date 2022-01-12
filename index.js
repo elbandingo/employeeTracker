@@ -28,14 +28,18 @@ function mainPrompt() {
         type: "list",
         name: "task",
         message: "Please make a selection",
-        choices: ["View Employees", "View Employees By Department", "View Roles", "Add Department", "Add Employee", "Remove Employee", "Update Employee", "Add Role", "End"]
+        choices: ["View Employees", "View Departments", "View Employees By Department", "View Roles", "Add Department", "Add Employee", "Remove Employee", "Update Employee", "Add Role", "End"]
     }]).then(({task}) => {
         console.log(task);
         console.log('======================');
         //if task selected is view employees, run view employees query function, run through the array of choices, and apply each function
         if(task === "View Employees"){
             viewEmp();
-        } else if (task === "View Employees By Department") {
+        } else if(task === "View Departments") {
+            viewDept();
+        }
+        
+        else if (task === "View Employees By Department") {
             viewByDept();
         } else if (task === "View Roles") {
             viewRoles();
@@ -48,10 +52,8 @@ function mainPrompt() {
         } else if (task === "Update Employee") {
             updateEmp();
         } else if (task === "Add Role") {
-            console.log("you chose add role")
             addRole();
         } else if (task === "End") {
-            console.log("You chose to end the program, goodbye");
             db.end();
         }
     })
@@ -275,6 +277,15 @@ function addRole() {
     })
 }
 
+//function to view departments
+function viewDept() {
+    const sql = `SELECT * FROM departments`;
+    db.query(sql, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        mainPrompt();
+    })
+}
 
 
 
