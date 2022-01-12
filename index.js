@@ -49,7 +49,7 @@ function mainPrompt() {
             updateEmp();
         } else if (task === "Add Role") {
             console.log("you chose add role")
-            //updateRole();
+            addRole();
         } else if (task === "End") {
             console.log("You chose to end the program, goodbye");
             db.end();
@@ -229,6 +229,51 @@ function updateEmp() {
 
 }
 
+
+//function to add role
+function addRole() {
+    inquirer.prompt([{
+        type: "input",
+        name: "role_id",
+        message: "give this role a numeric value"
+    },
+    {
+        type: "input",
+        name: "role_title",
+        message: "What is the name of this role"
+    },
+    {
+        type: "input",
+        name: "role_salary",
+        message: "What is the salary?"
+    },
+    {
+        type: "input",
+        name: "department_id",
+        message: "What is the department ID?"
+    }
+
+    ]).then((answer) => {
+        const sql = `INSERT INTO roles SET ?`;
+        const query = `SELECT * FROM roles`;
+        db.query(sql, {
+            id: answer.role_id,
+            title: answer.role_title,
+            salary: answer.role_salary,
+            department_id: answer.department_id
+        },(err,res) => {
+            if(err) throw err;
+            console.log("you have created a new role, please see the list below");
+            
+        })
+
+        db.query(query, (err,res) => {
+            if(err) throw err;
+            console.table(res);
+            mainPrompt();
+        })
+    })
+}
 
 
 
