@@ -1,6 +1,7 @@
 //create the require requests for mysql2, and inquirer
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
+const { map } = require("lodash");
 
 //connect to the DB, let user know they are connected
 const db = mysql.createConnection({
@@ -79,6 +80,7 @@ function viewEmp() {
 
 //function to view by department, first they must make an inquirer to pick from the list
 function viewByDept() {
+    
     inquirer.prompt([{
         type: "list",
         name: "departmentChoice",
