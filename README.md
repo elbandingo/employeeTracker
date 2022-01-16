@@ -11,7 +11,6 @@ This assignement was to create a Node.js application using inquirer, express, an
 ### Installation:
 download or clone the repo, install the dependencies by typing npm i. once that is complete, type npm start to run the program.
 ### Usage
-![usage tutorial]
 
 https://user-images.githubusercontent.com/91435551/149681500-b9212d07-a3ad-4369-82e2-8fe4a77a7be7.mp4
 
